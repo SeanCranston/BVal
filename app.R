@@ -108,7 +108,7 @@ server <- function(input, output) {
             HTML()
         
         pred <- list()
-        pred[["Best_Price"]] <- predict(object = Models$Best_Price, newdata = observed)
+        pred$Best_Price <- predict(object = Models$Best_Price, newdata = observed)
         # pred$Best_Sales <- predict(Models$Best_Sales, newdata = observed)
         # pred$Best_EBIT <- predict(Models$Best_EBIT, newdata = observed)
         # pred$Best_EBITDA <- predict(Models$Best_EBITDA, newdata = observed)
