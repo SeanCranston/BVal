@@ -13,8 +13,7 @@ options(scipen = 999)
 
 #### Load Models
 
-#Models <- read_rds("https://raw.githubusercontent.com/SeanCranston/BVal/main/Models/Best_mds.RData")
-Models <-   read_rds("C:\\Users\\seanc\\OneDrive - MNSCU\\STAT 381\\BVal Proj\\BVal\\Models\\Models_Best.RData")
+Models <- read_rds("https://raw.githubusercontent.com/SeanCranston/BVal/main/Models/Best_mds.RData")
 #load(mtcars)
 
 #############################################################################
@@ -84,7 +83,7 @@ server <- function(input, output) {
     
     ##### this outputs the a row from movie_data that is to be rated
     #values <- reactiveValues(dum = data.frame(x="test"))
-    # dummy data frame
+    
     output$Dat <- renderUI({
         observed <- 
             data.frame(
@@ -105,30 +104,38 @@ server <- function(input, output) {
                 Sale.Date = input$Sale.Date
             )
         
-        # start predictions
+        # observed %>% 
+        #     knitr::kable(format = "html") %>%
+        #     kable_styling("striped",full_width = T) %>%
+        #     #add_header_above(c(" " = 2, "95% Confident Interval" = 2)) %>%
+        #     HTML()
+        
         pred <- list()
+        # pred$Best_Price <- predict(object = Models$Best_Price, newdata = observed)
+        # pred$Best_Sales <- predict(Models$Best_Sales, newdata = observed)
+        # pred$Best_EBIT <- predict(Models$Best_EBIT, newdata = observed)
+        # pred$Best_EBITDA <- predict(Models$Best_EBITDA, newdata = observed)
         pred <- lapply(Models, predict, observed) %>% 
             lapply(., round, digits = 2)
         
-        #populate data frame with predictions an CI
         x = data.frame(
-            Outcome = c("MVIC/EBIT", "MVIC/EBITDA", "MVIC", "MVIC/Net Sales"),
-            Estimate = c(pred$EBIT,
-                         pred$EBITDA,
-                         paste0("$",format(pred$Price, big.mark = ",")), 
-                         pred$Sales),
+            Outcome = c("Price", "MVIC/Sales", "MVIC/EBIT","MVIC/EBITDA"),
+            Estimate = c(paste0("$",format(pred$Best_Price, big.mark = ",")),
+                         pred$Best_Sales,
+                         pred$Best_EBIT, 
+                         pred$Best_EBITDA),
             Lower_Estimate = c(
-                max(0,pred$EBIT-2*getTrainPerf(Models$EBIT)$TrainRMSE),
-                max(0,pred$EBITDA-2*getTrainPerf(Models$EBITDA)$TrainRMSE),
-                paste0("$",format(max(0,pred$Price-2*getTrainPerf(Models$Price)$TrainRMSE), big.mark = ",")),
-                max(0,pred$Sales-2*getTrainPerf(Models$Sales)$TrainRMSE)
+                NA,
+                max(0,pred$Best_Sales-2*getTrainPerf(Models$Best_Sales)$TrainRMSE),
+                max(0,pred$Best_EBIT-2*getTrainPerf(Models$Best_EBIT)$TrainRMSE),
+                max(0,pred$Best_EBITDA-2*getTrainPerf(Models$Best_EBITDA)$TrainRMSE)
                 
             ),
             Upper_Estimate = c(
-                pred$EBIT+2*getTrainPerf(Models$EBIT)$TrainRMSE,
-                pred$EBITDA+2*getTrainPerf(Models$EBITDA)$TrainRMSE,
-                paste0("$",format(pred$Price+2*getTrainPerf(Models$Price)$TrainRMSE, big.mark = ",")),
-                pred$Sales+2*getTrainPerf(Models$Sales)$TrainRMSE
+                NA,
+                pred$Best_Sales+2*getTrainPerf(Models$Best_Sales)$TrainRMSE,
+                pred$Best_EBIT+2*getTrainPerf(Models$Best_EBIT)$TrainRMSE,
+                pred$Best_EBITDA+2*getTrainPerf(Models$Best_EBITDA)$TrainRMSE
 
             ))
 
