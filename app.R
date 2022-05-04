@@ -14,7 +14,7 @@ options(scipen = 999)
 #### Load Models
 
 #Models <- read_rds("https://raw.githubusercontent.com/SeanCranston/BVal/main/Models/Best_mds.RData")
-Models <-   read_rds("C:\\Users\\seanc\\OneDrive - MNSCU\\STAT 381\\BVal Proj\\BVal\\Models\\Models_Best.RData")
+Models <-   read_rds("https://raw.githubusercontent.com/SeanCranston/BVal/main/Models/Models_Best.RData")
 #load(mtcars)
 
 #############################################################################
@@ -118,10 +118,10 @@ server <- function(input, output) {
                          paste0("$",format(pred$Price, big.mark = ",")), 
                          pred$Sales),
             Lower_Estimate = c(
-                max(0,pred$EBIT-2*getTrainPerf(Models$EBIT)$TrainRMSE),
-                max(0,pred$EBITDA-2*getTrainPerf(Models$EBITDA)$TrainRMSE),
+                round(max(0,pred$EBIT-2*getTrainPerf(Models$EBIT)$TrainRMSE),digits = 2),
+                round(max(0,pred$EBITDA-2*getTrainPerf(Models$EBITDA)$TrainRMSE),digits = 2),
                 paste0("$",format(max(0,pred$Price-2*getTrainPerf(Models$Price)$TrainRMSE), big.mark = ",")),
-                max(0,pred$Sales-2*getTrainPerf(Models$Sales)$TrainRMSE)
+                round(max(0,pred$Sales-2*getTrainPerf(Models$Sales)$TrainRMSE),digits = 2)
                 
             ),
             Upper_Estimate = c(
